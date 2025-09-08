@@ -36,23 +36,21 @@ class AbrigoAnimais {
 
     }
 
-
+    // 
     function podeAdotar(animalEncontrado, pessoas){   
-      if(animalEncontrado.brinquedos.every(brinquedoDoAnimal => pessoas[0].listaBrinquedos.includes(brinquedoDoAnimal))){
-        if(verificarLimiteAdotados(pessoas[0]) && verificaRegrasAnimais(animalEncontrado, pessoas[0])){
-            pessoas[0].animaisAdotados.push(animalEncontrado);
-        }
+      if(validarRegrasAdocao(animalEncontrado, pessoas[0])){
+          pessoas[0].animaisAdotados.push(animalEncontrado);
       }
       else if(animalEncontrado.brinquedos.every(brinquedoDoAnimal => pessoas[1].listaBrinquedos.includes(brinquedoDoAnimal))){
         pessoas[1].animaisAdotados.push(animalEncontrado);
       }
-    }
+      else{pessoas[2].animaisRecebidos.push(animalEncontrado)}
 
+    }
 
     function verificarLimiteAdotados(pessoa){
        return pessoa.animaisAdotados.length < 3;
     }
-
 
     function verificaRegrasAnimais(animal, pessoas){
 
@@ -68,12 +66,33 @@ class AbrigoAnimais {
           break;
 
         case "jabuti":
-           return true; 
-          break;
-        }
+          if(pessoa.animaisAdotados.length !== 0) {return true;}
+          else {return false;}
       }
     }
 
+    function verificarOrdemBrinquedos(animais, listaBrinquedosPessoa){
+       let indice = 0;
+        for(let brinquedo of animais.brinquedos){
+          indic = pessoaBrinquedo.indexOf(brinquedo,pos);
+          if(indice ===-1) return false;
+          indice++;
+        }
+        return true;
+    }
+
+    function verificarBrinquedosTutor(animal, pessoa){
+       if(animal.brinquedos.every(brinquedoDoAnimal => pessoa.listaBrinquedos.includes(brinquedoDoAnimal))) {return true;}
+       return false;
+    }
+
+    function validarRegrasAdocao(animais, pessoas){    
+        verificarBrinquedosTutor(animais,pessoas);
+        verificarOrdemBrinquedos(animais, pessoas);
+        verificaRegrasAnimais(animais,pessoas);
+        verificarLimiteAdotados(pessoas);
+    }
+  }
 }
   
 
