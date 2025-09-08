@@ -6,22 +6,22 @@ class AbrigoAnimais {
 
     const listaBriquedosPessoa1 = brinquedosPessoa1.split(',').map(item => item.trim());
     const listaBriquedosPessoa2 = brinquedosPessoa2.split(',').map(item => item.trim());
-    const listaOrdemAnimais = ordemAnimais.split(',').map(item => item.trim()).sort();
+    const listaOrdemAnimais = ordemAnimais.split(',').map(item => item.trim());
 
     let animais = [
-    {nome: "Rex", especie:"cão", brinquedos: ["RATO", "BOLA"]},
-    {nome: "Mimi", especie: "gato",brinquedos: ["BOLA", "LASER"]},
-    {nome: "Fofo", especie: "gato", brinquedos: ["BOLA", "RATO", "LASER"]},
-    {nome: "Zero", especie: "gato", brinquedos: ["RATO","BOLA"]},
-    {nome: "Bola", especie: "cão", brinquedos: ["CAIXA", "NOVELO"]},
-    {nome: "Bebe", especie: "cão", brinquedos: ["LASER", "RATO", "BOLA"]},
-    {nome: "Loco", especie: "jabuti", brinquedos: ["SKATE", "RATO"]}
+          {nome: "Rex", especie:"cão", brinquedos: ["RATO", "BOLA"]},
+          {nome: "Mimi", especie: "gato",brinquedos: ["BOLA", "LASER"]},
+          {nome: "Fofo", especie: "gato", brinquedos: ["BOLA", "RATO", "LASER"]},
+          {nome: "Zero", especie: "gato", brinquedos: ["RATO","BOLA"]},
+          {nome: "Bola", especie: "cão", brinquedos: ["CAIXA", "NOVELO"]},
+          {nome: "Bebe", especie: "cão", brinquedos: ["LASER", "RATO", "BOLA"]},
+          {nome: "Loco", especie: "jabuti", brinquedos: ["SKATE", "RATO"]}
     ];
 
     let pessoas = [
-    {nome: "- pessoa1", animaisAdotados:[], listaBrinquedos: listaBriquedosPessoa1},
-    {nome: "- pessoa2", animaisAdotados:[], listaBrinquedos: listaBriquedosPessoa2},
-    {nome: " - abrigo", animaisRecebidos:[]}
+          {nome: "- pessoa1", animaisAdotados:[], listaBrinquedos: listaBriquedosPessoa1},
+          {nome: "- pessoa2", animaisAdotados:[], listaBrinquedos: listaBriquedosPessoa2},
+          {nome: " - abrigo", animaisRecebidos:[]}
     ];
 
     let animaisETutores = [];
@@ -32,49 +32,53 @@ class AbrigoAnimais {
       if(!animalEncontrado) {
         return {erro: "AnimalInválido"}
       }
-      podeAdotar(animalEncontrado, pessoas);
+      podeAdotar(animalEncontrado, pessoas[0]);
+      podeAdotar(animalEncontrado, pessoas[1]);
 
     }
 
     // 
-    function podeAdotar(animalEncontrado, pessoas){   
-      if(validarRegrasAdocao(animalEncontrado, pessoas[0])){
-          pessoas[0].animaisAdotados.push(animalEncontrado);
-      }
-      else if(animalEncontrado.brinquedos.every(brinquedoDoAnimal => pessoas[1].listaBrinquedos.includes(brinquedoDoAnimal))){
-        pessoas[1].animaisAdotados.push(animalEncontrado);
-      }
-      else{pessoas[2].animaisRecebidos.push(animalEncontrado)}
-
+      function podeAdotar(animal, pessoas) {   
+        if (validarRegrasAdocao(animal, pessoas[0])) {
+          pessoas[0].animaisAdotados.push(animal);
+        } else if (validarRegrasAdocao(animal, pessoas[1])) {
+          pessoas[1].animaisAdotados.push(animal);
+        } else {
+          pessoas[2].animaisRecebidos.push(animal);
+        }
     }
 
     function verificarLimiteAdotados(pessoa){
        return pessoa.animaisAdotados.length < 3;
     }
 
-    function verificaRegrasAnimais(animal, pessoas){
-
-      switch(animal.especie){
+    function verificaRegrasAnimais(animal, pessoas) {
+      switch (animal.especie) {
         case "gato":
-          if  (animal.brinquedos.every(brinquedos => pessoas[0].listaBrinquedos.includes(brinquedos)) && animal.brinquedos.every(brinquedos => pessoas[1].listaBrinquedos.includes(brinquedos)))
-          {return false;}
-          else {return true;}
-          break;
-  
+            const pessoa1Pode = animal.brinquedos.every(brinquedos => pessoas[0].listaBrinquedos.includes(brinquedos));
+            const pessoa2Pode = animal.brinquedos.every(brinquedos => pessoas[1].listaBrinquedos.includes(brinquedos));
+            
+            if (pessoa1Pode && pessoa2Pode) return false;
+            return true;
+
         case "cão":
-          return true;
-          break;
+            const adotaveis = pessoas.filter(p => p.animaisAdotados.length < 3);
+            return adotaveis.length > 0;
 
         case "jabuti":
-          if(pessoa.animaisAdotados.length !== 0) {return true;}
-          else {return false;}
-      }
+            const pessoaComAnimal = pessoas.some(p => p.animaisAdotados.length > 0);
+            return pessoaComAnimal;
+
+        default:
+            return false;
     }
+}
+
 
     function verificarOrdemBrinquedos(animais, listaBrinquedosPessoa){
        let indice = 0;
         for(let brinquedo of animais.brinquedos){
-          indic = pessoaBrinquedo.indexOf(brinquedo,pos);
+          indic = pessoaBrinquedo.indexOf(brinquedo,indice);
           if(indice ===-1) return false;
           indice++;
         }
@@ -86,12 +90,16 @@ class AbrigoAnimais {
        return false;
     }
 
-    function validarRegrasAdocao(animais, pessoas){    
-        verificarBrinquedosTutor(animais,pessoas);
-        verificarOrdemBrinquedos(animais, pessoas);
-        verificaRegrasAnimais(animais,pessoas);
-        verificarLimiteAdotados(pessoas);
-    }
+     function validarRegrasAdocao(animais, pessoas) {
+        if(
+          verificarBrinquedosTutor(animais, pessoas) &&
+          verificarOrdemBrinquedos(animais, pessoas) &&
+          verificarLimiteAdotados(pessoas) &&
+          verificaRegrasAnimais(animais, pessoas) 
+        ){return true;}
+        return false;
+}
+
   }
 }
   
