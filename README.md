@@ -17,7 +17,7 @@ Sua missão será encontrar pessoas aptas a levar os animais para casa.
 
 ### REGRAS PARA REUNIR PESSOA COM ANIMAIS
 
-1) O animal vai para a pessoa que mostrar todos seus brinquedos favoritos na ordem desejada
+1) O animal vai para a pessoa que mostrar todos seus brinquedos favoritos na ordem desejada 
 2) Uma pessoa pode intercalar brinquedos que o animal queira ou não, desde que estejam na ordem desejada
 3) Gatos não dividem seus brinquedos
 4) Se ambas as pessoas tiverem condições de adoção, ninguém fica com o animal (tadinho)
