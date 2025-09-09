@@ -3,8 +3,8 @@ class AbrigoAnimais {
   encontraPessoas(brinquedosPessoa1, brinquedosPessoa2, ordemAnimais) {
 
     //Parte trasnformar as entradas em listas
-    const listaBriquedosPessoa1 = brinquedosPessoa1.split(',').map(item => item.trim().toUpperCase());
-    const listaBriquedosPessoa2 = brinquedosPessoa2.split(',').map(item => item.trim().toUpperCase());
+    const listaBrinquedosPessoa1 = brinquedosPessoa1.split(',').map(item => item.trim().toUpperCase());
+    const listaBrinquedosPessoa2 = brinquedosPessoa2.split(',').map(item => item.trim().toUpperCase());
     const listaOrdemAnimais = ordemAnimais.split(',').map(item => item.trim().toUpperCase());
     
     // Lista do resultado final
@@ -23,8 +23,8 @@ class AbrigoAnimais {
 
     // Lista de pessoas, objetos
     let pessoas = [
-          {nome: "- pessoa 1", animaisAdotados:[], listaBrinquedos: listaBriquedosPessoa1},
-          {nome: "- pessoa 2", animaisAdotados:[], listaBrinquedos: listaBriquedosPessoa2},
+          {nome: "- pessoa 1", animaisAdotados:[], listaBrinquedos: listaBrinquedosPessoa1},
+          {nome: "- pessoa 2", animaisAdotados:[], listaBrinquedos: listaBrinquedosPessoa2},
           {nome: "- abrigo", animaisRecebidos:[]}
     ];
 
@@ -34,13 +34,13 @@ class AbrigoAnimais {
       return { erro: "Animal inválido" };
     }
 
-    if (new Set(listaBriquedosPessoa1).size !== listaBriquedosPessoa1.length ||
-        new Set(listaBriquedosPessoa2).size !== listaBriquedosPessoa2.length) {
+    if (new Set(listaBrinquedosPessoa1).size !== listaBrinquedosPessoa1.length ||
+        new Set(listaBrinquedosPessoa2).size !== listaBrinquedosPessoa2.length) {
       return { erro: "Brinquedo inválido" };
     }
 
     const brinquedosValidos = new Set(animais.flatMap(animal => animal.brinquedos));
-    for (let brinquedo of listaBriquedosPessoa1.concat(listaBriquedosPessoa2)) {
+    for (let brinquedo of listaBrinquedosPessoa1.concat(listaBrinquedosPessoa2)) {
         if (!brinquedosValidos.has(brinquedo)) {
           return { erro: "Brinquedo inválido" };
        }
@@ -106,10 +106,10 @@ class AbrigoAnimais {
       switch (animal.especie) {
         
         case "gato":
-            const pessoa1Pode = animal.brinquedos.every(b => pessoas[0].listaBrinquedos.includes(b));
-            const pessoa2Pode = animal.brinquedos.every(b => pessoas[1].listaBrinquedos.includes(b));
+            const pessoa1Pode = animal.brinquedos.every(brinquedos => pessoas[0].listaBrinquedos.includes(brinquedos));
+            const pessoa2Pode = animal.brinquedos.every(brinquedos => pessoas[1].listaBrinquedos.includes(brinquedos));
             
-            if (pessoa1Pode && pessoa2Pode) return false; // gato não divide -> se ambos aptos, vai pro abrigo
+            if (pessoa1Pode && pessoa2Pode){return false}; 
             return true;
 
         case "cão":
