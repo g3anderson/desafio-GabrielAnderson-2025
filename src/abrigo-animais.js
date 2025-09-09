@@ -4,10 +4,15 @@ class AbrigoAnimais {
 
   encontraPessoas(brinquedosPessoa1, brinquedosPessoa2, ordemAnimais) {
 
+    //Parte trasnformar as entradas em listas
     const listaBriquedosPessoa1 = brinquedosPessoa1.split(',').map(item => item.trim());
     const listaBriquedosPessoa2 = brinquedosPessoa2.split(',').map(item => item.trim());
     const listaOrdemAnimais = ordemAnimais.split(',').map(item => item.trim());
+    
+    // Lista do resultado final
+    let animaisETutores = [];
 
+    //Listas de animais, objetos
     let animais = [
           {nome: "Rex", especie:"cão", brinquedos: ["RATO", "BOLA"]},
           {nome: "Mimi", especie: "gato",brinquedos: ["BOLA", "LASER"]},
@@ -18,42 +23,75 @@ class AbrigoAnimais {
           {nome: "Loco", especie: "jabuti", brinquedos: ["SKATE", "RATO"]}
     ];
 
+    // Lista de pessoas, objetos
     let pessoas = [
           {nome: "- pessoa1", animaisAdotados:[], listaBrinquedos: listaBriquedosPessoa1},
           {nome: "- pessoa2", animaisAdotados:[], listaBrinquedos: listaBriquedosPessoa2},
           {nome: " - abrigo", animaisRecebidos:[]}
     ];
 
-    let animaisETutores = [];
+    //Validacoes de dados validos
+    const nomesAnimaisSet = new Set(listaOrdemAnimais);
+        if (nomesAnimaisSet.size !== listaOrdemAnimais.length) {
+        return { erro: "Animal inválido" };
+    }
 
+        if (new Set(listaBriquedosPessoa1).size !== listaBriquedosPessoa1.length ||
+        new Set(listaBriquedosPessoa2).size !== listaBriquedosPessoa2.length) {
+        return { erro: "Brinquedo inválido" };
+    }
 
+    const brinquedosValidos = new Set(animais.flatMap(animal => animal.brinquedos));
+    for (let brinquedo of listaBriquedosPessoa1.concat(listaBriquedosPessoa2)) {
+        if (!brinquedosValidos.has(brinquedo)) {
+        return { erro: "Brinquedo inválido" };
+       }
+    }
+
+    //Looping para realizar as validações de cada animal que está na lista que foi passada como parametro
     for(let nomeAnimal of listaOrdemAnimais){
+      
       const animalEncontrado = animais.find(animalAtual => animalAtual.nome === nomeAnimal);
-      if(!animalEncontrado) {
-        return {erro: "AnimalInválido"}
-      }
-      podeAdotar(animalEncontrado, pessoas[0]);
-      podeAdotar(animalEncontrado, pessoas[1]);
+      if(!animalEncontrado) {return {erro: "AnimalInválido"}}
+
+      podeAdotar(animalEncontrado, pessoas);
 
     }
 
-    // 
+    // Função que realiza a chamada de validacoes secundarias e responde a pergunta de nosso looping a todos os animais da lista
       function podeAdotar(animal, pessoas) {   
-        if (validarRegrasAdocao(animal, pessoas[0])) {
+        if (validarRegrasAdocao(animal, pessoas[0], pessoas)) {
           pessoas[0].animaisAdotados.push(animal);
-        } else if (validarRegrasAdocao(animal, pessoas[1])) {
+        } else if (validarRegrasAdocao(animal, pessoas[1], pessoas)) {
           pessoas[1].animaisAdotados.push(animal);
         } else {
           pessoas[2].animaisRecebidos.push(animal);
         }
     }
 
+    //Basicamente, essa função chama todas as validacoes para definir se o animal será adotado ou não
+     function validarRegrasAdocao(animais, pessoa, pessoas) {
+        if(
+          verificarBrinquedosTutor(animais, pessoa) &&
+          verificarOrdemBrinquedos(animais, pessoa) &&
+          verificarLimiteAdotados(pessoa) &&
+          verificaRegrasAnimais(animais, pessoa) 
+        ){return true;}
+
+        return false;
+}
+
+    // Validacao da regra do enunciado, controla o limite de animais adotados por cada pessoa
     function verificarLimiteAdotados(pessoa){
        return pessoa.animaisAdotados.length < 3;
     }
 
+    // Realiza a verificacao das regras especiais dos animais, exemplo, gatos não aceitarem que duas 
+    // pessoas tenham os mesmos brinquedos e o jabuti aceitar qualquer ordem desde que tenha outro animal já adotado
     function verificaRegrasAnimais(animal, pessoas) {
+
       switch (animal.especie) {
+        
         case "gato":
             const pessoa1Pode = animal.brinquedos.every(brinquedos => pessoas[0].listaBrinquedos.includes(brinquedos));
             const pessoa2Pode = animal.brinquedos.every(brinquedos => pessoas[1].listaBrinquedos.includes(brinquedos));
@@ -62,48 +100,46 @@ class AbrigoAnimais {
             return true;
 
         case "cão":
-            const adotaveis = pessoas.filter(p => p.animaisAdotados.length < 3);
-            return adotaveis.length > 0;
+            return true;
 
         case "jabuti":
-            const pessoaComAnimal = pessoas.some(p => p.animaisAdotados.length > 0);
-            return pessoaComAnimal;
+            if(pessoas.some(pessoa => pessoa.animaisAdotados.length > 0))
+              {return true}
+               else{return false};
 
         default:
             return false;
     }
 }
 
+    // Realiza a verificacao da ordem dos brinquedos, verificando se ela satisfaz o que cada animal deseja
+    function verificarOrdemBrinquedos(animal, pessoa) {
+    let indicePessoa = 0;
 
-    function verificarOrdemBrinquedos(animais, listaBrinquedosPessoa){
-       let indice = 0;
-        for(let brinquedo of animais.brinquedos){
-          indic = pessoaBrinquedo.indexOf(brinquedo,indice);
-          if(indice ===-1) return false;
-          indice++;
+    for (let brinquedoAnimal of animal.brinquedos) {
+        if(animal.nome === "Loco"){return true;}
+        let encontrado = false;
+
+        while (indicePessoa < pessoa.listaBrinquedos.length) {
+            if (pessoa.listaBrinquedos[indicePessoa] === brinquedoAnimal) {
+                encontrado = true;
+                indicePessoa++;
+                break;
+            }
+              indicePessoa++;
         }
-        return true;
+        if (!encontrado) {return false};
     }
 
+    return true;
+}
+
+    // Verifica se o tutor tem todos os brinquedos que o animal deseja
     function verificarBrinquedosTutor(animal, pessoa){
        if(animal.brinquedos.every(brinquedoDoAnimal => pessoa.listaBrinquedos.includes(brinquedoDoAnimal))) {return true;}
        return false;
     }
-
-     function validarRegrasAdocao(animais, pessoas) {
-        if(
-          verificarBrinquedosTutor(animais, pessoas) &&
-          verificarOrdemBrinquedos(animais, pessoas) &&
-          verificarLimiteAdotados(pessoas) &&
-          verificaRegrasAnimais(animais, pessoas) 
-        ){return true;}
-        return false;
-}
-
   }
 }
   
-
-
-
 export { AbrigoAnimais as AbrigoAnimais };
